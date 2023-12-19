@@ -61,6 +61,52 @@ def products():
 
     return jsonify(result), HTTPStatus.OK.value
 
+@home_api.route('/products', methods=["POST"])
+@swag_from({
+    'responses': {
+        HTTPStatus.OK.value: {
+            'description': 'Produk berhasil ditambahkan',
+        }
+    }
+})
+def add_product():
+    """
+    Tambah produk
+    ---
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          id: Product
+          properties:
+            sku:
+              type: string
+            brand:
+              type: string
+            name:
+              type: string
+            description:
+              type: string
+            price:
+              type: float
+            non_discountable:
+              type: boolean
+    """
+    req_data = request.get_json()
+
+    data = Product(
+        sku=req_data.get('sku'),
+        brand=req_data.get('brand'),
+        name=req_data.get('name'),
+        description=req_data.get('description'),
+        price=req_data.get('price'),
+        non_discountable=req_data.get('non_discountable', False),
+    )
+
+    session.add(data)
+    session.commit()
+    return 'Data berhasil ditambahkan', HTTPStatus.OK.value
 
 @home_api.route('/products/<id>', methods=["GET"])
 @swag_from({
